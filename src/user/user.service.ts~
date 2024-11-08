@@ -1,0 +1,39 @@
+import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '../database/database.service';
+import { AuthDto } from '../auth/dto/auth.dto';
+import { hash } from 'argon2';
+
+@Injectable()
+export class UserService {
+  public constructor(private readonly databaseService: DatabaseService) {}
+
+  public async findById(id: string) {
+    return this.databaseService.user.findUnique({
+      where: { id },
+      include: {
+        planned: true,
+        watched: true,
+        willBeWatching: true,
+        watchingNow: true,
+      },
+    });
+  }
+
+  public async findByEmail(email: string) {
+    return this.databaseService.user.findUnique({ where: { email } });
+  }
+
+  public async create(dto: AuthDto) {
+    const user = {
+      email: dto.email,
+      password: await hash(dto.password),
+      name: dto.name,
+    };
+
+    return this.databaseService.user.create({
+      data: {
+        ...user,
+      },
+    });
+  }
+}

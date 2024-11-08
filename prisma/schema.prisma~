@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(cuid())
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  email    String @unique
+  name     String
+  password String
+  avatar   String
+
+  willBeWatching WillBeWatching[]
+  watchingNow    WatchingNow[]
+  watched        Watched[]
+  planned        Planned[]
+  comments       Comment[]
+}
+
+model Comment {
+  id String @id @default(cuid())
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  content       String
+  anilibriaSlug String @map("anilibria_slug")
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String? @map("user_id")
+}
+
+model WillBeWatching {
+  id String @id @default(cuid())
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  anilibriaSlug String @map("anilibria_slug")
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String? @map("user_id")
+}
+
+model WatchingNow {
+  id String @id @default(cuid())
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  anilibriaSlug String @map("anilibria_slug")
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String? @map("user_id")
+}
+
+model Watched {
+  id String @id @default(cuid())
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  anilibriaSlug String @map("anilibria_slug")
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String? @map("user_id")
+}
+
+model Planned {
+  id String @id @default(cuid())
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  anilibriaSlug String @map("anilibria_slug")
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String? @map("user_id")
+}
