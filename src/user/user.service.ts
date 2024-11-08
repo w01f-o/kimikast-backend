@@ -10,12 +10,6 @@ export class UserService {
   public async findById(id: string) {
     return this.databaseService.user.findUnique({
       where: { id },
-      include: {
-        planned: true,
-        watched: true,
-        willBeWatching: true,
-        watchingNow: true,
-      },
     });
   }
 
@@ -30,9 +24,22 @@ export class UserService {
       password: await hash(dto.password),
     };
 
+    const defaultUserLists = [
+      { name: 'planned', isDeleting: false },
+      { name: 'watched', isDeleting: false },
+      { name: 'willBeWatching', isDeleting: false },
+      { name: 'watchingNow', isDeleting: false },
+      { name: 'abandoned', isDeleting: false },
+    ];
+
     return this.databaseService.user.create({
       data: {
         ...user,
+        lists: {
+          createMany: {
+            data: defaultUserLists,
+          },
+        },
       },
     });
   }

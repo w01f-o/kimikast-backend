@@ -9,6 +9,7 @@ import {
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/auth.dto';
 import { Request, Response } from 'express';
+import { ApiErrors } from '../enums/ApiErrors.enum';
 
 @Controller('auth')
 export class AuthController {
@@ -19,10 +20,17 @@ export class AuthController {
     @Body() dto: AuthDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const { refreshToken, ...response } = await this.authService.login(dto);
+    const {
+      refreshToken,
+      accessToken,
+      user: { updatedAt, createdAt, ...response },
+    } = await this.authService.login(dto);
     this.authService.addRefreshTokenToResponse(res, refreshToken);
 
-    return response;
+    return {
+      user: response,
+      accessToken,
+    };
   }
 
   @Post('register')
@@ -30,10 +38,17 @@ export class AuthController {
     @Body() dto: AuthDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const { refreshToken, ...response } = await this.authService.register(dto);
+    const {
+      refreshToken,
+      accessToken,
+      user: { updatedAt, createdAt, ...response },
+    } = await this.authService.register(dto);
     this.authService.addRefreshTokenToResponse(res, refreshToken);
 
-    return response;
+    return {
+      user: response,
+      accessToken,
+    };
   }
 
   @Post('refresh')
@@ -43,11 +58,13 @@ export class AuthController {
   ) {
     const refreshTokenFromCookie =
       req.cookies[this.authService.REFRESH_TOKEN_NAME];
-
+    console.log(refreshTokenFromCookie);
     if (!refreshTokenFromCookie) {
       this.authService.removeRefreshTokenFromResponse(res);
 
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException({
+        message: ApiErrors.INVALID_REFRESH_TOKEN,
+      });
     }
 
     const { refreshToken, ...response } = await this.authService.refresh(

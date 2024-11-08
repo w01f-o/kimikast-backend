@@ -16,13 +16,37 @@ model User {
   email    String @unique
   name     String
   password String
-  avatar   String @default("no-avatar.png")
+  avatar   String @default("no-avatar.webp")
 
-  willBeWatching WillBeWatching[]
-  watchingNow    WatchingNow[]
-  watched        Watched[]
-  planned        Planned[]
-  comments       Comment[]
+  lists    List[]
+  comments Comment[]
+}
+
+model List {
+  id String @id @default(cuid())
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String  @map("user_id")
+  name       String
+  isPublic   Boolean @default(false)
+  isDeleting Boolean @default(true)
+
+  animes Anime[]
+}
+
+model Anime {
+  id String @id @default(cuid())
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  anilibriaSlug String @map("anilibria_slug")
+
+  listId String @map("list_id")
+  lists  List   @relation(fields: [listId], references: [id], onDelete: Cascade)
 }
 
 model Comment {
@@ -31,57 +55,10 @@ model Comment {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  content       String
-  anilibriaSlug String @map("anilibria_slug")
-
-  user   User?   @relation(fields: [userId], references: [id])
-  userId String? @map("user_id")
-}
-
-model WillBeWatching {
-  id String @id @default(cuid())
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  content String
 
   anilibriaSlug String @map("anilibria_slug")
 
-  user   User?   @relation(fields: [userId], references: [id])
-  userId String? @map("user_id")
-}
-
-model WatchingNow {
-  id String @id @default(cuid())
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  anilibriaSlug String @map("anilibria_slug")
-
-  user   User?   @relation(fields: [userId], references: [id])
-  userId String? @map("user_id")
-}
-
-model Watched {
-  id String @id @default(cuid())
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  anilibriaSlug String @map("anilibria_slug")
-
-  user   User?   @relation(fields: [userId], references: [id])
-  userId String? @map("user_id")
-}
-
-model Planned {
-  id String @id @default(cuid())
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  anilibriaSlug String @map("anilibria_slug")
-
-  user   User?   @relation(fields: [userId], references: [id])
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String? @map("user_id")
 }

@@ -9,7 +9,7 @@ import { UserService } from '../user/user.service';
 import { AuthDto } from './dto/auth.dto';
 import { verify } from 'argon2';
 import { Response } from 'express';
-import * as process from 'node:process';
+import { ApiErrors } from '../enums/ApiErrors.enum';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +23,7 @@ export class AuthService {
 
   public async login(dto: AuthDto) {
     const { password, ...user } = await this.validateUser(dto);
-    const tokens = this.issueTokens(user.id);
+    const tokens = this.generateTokens(user.id);
 
     return {
       user,
@@ -34,10 +34,13 @@ export class AuthService {
   public async register(dto: AuthDto) {
     const userFromDb = await this.userService.findByEmail(dto.email);
 
-    if (userFromDb) throw new BadRequestException('User already exists');
+    if (userFromDb)
+      throw new BadRequestException({
+        message: ApiErrors.USER_ALREADY_EXISTS,
+      });
 
     const { password, ...user } = await this.userService.create(dto);
-    const tokens = this.issueTokens(user.id);
+    const tokens = this.generateTokens(user.id);
 
     return {
       user,
@@ -48,10 +51,13 @@ export class AuthService {
   public async refresh(refreshToken: string) {
     const result = await this.jwtService.verifyAsync(refreshToken);
 
-    if (!result) throw new UnauthorizedException('Invalid refresh token');
+    if (!result)
+      throw new UnauthorizedException({
+        message: ApiErrors.INVALID_REFRESH_TOKEN,
+      });
 
     const { password, ...user } = await this.userService.findById(result.id);
-    const tokens = this.issueTokens(user.id);
+    const tokens = this.generateTokens(user.id);
 
     return {
       user,
@@ -59,7 +65,7 @@ export class AuthService {
     };
   }
 
-  private issueTokens(userId: string) {
+  private generateTokens(userId: string) {
     const data = { id: userId };
 
     const accessToken = this.jwtService.sign(data, {
@@ -76,11 +82,14 @@ export class AuthService {
   private async validateUser(dto: AuthDto) {
     const user = await this.userService.findByEmail(dto.email);
 
-    if (!user) throw new NotFoundException('User not found');
+    if (!user)
+      throw new NotFoundException({
+        message: ApiErrors.USER_NOT_FOUND,
+      });
 
     const isValid = await verify(user.password, dto.password);
 
-    if (!isValid) throw new UnauthorizedException('Invalid credentials');
+    if (!isValid) throw new BadRequestException('Invalid credentials');
 
     return user;
   }
@@ -92,9 +101,9 @@ export class AuthService {
     res.cookie(this.REFRESH_TOKEN_NAME, refreshToken, {
       httpOnly: true,
       domain: 'localhost',
-      secure: false,
+      secure: true,
       expires: expiresIn,
-      sameSite: 'none',
+      sameSite: 'lax',
     });
   }
 
@@ -102,9 +111,9 @@ export class AuthService {
     res.cookie(this.REFRESH_TOKEN_NAME, '', {
       httpOnly: true,
       domain: 'localhost',
-      secure: false,
+      secure: true,
       expires: new Date(0),
-      sameSite: 'none',
+      sameSite: 'lax',
     });
   }
 }
