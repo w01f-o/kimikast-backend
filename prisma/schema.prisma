@@ -14,7 +14,7 @@ model User {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   email    String @unique
-  name     String
+  name     String @unique
   password String
   avatar   String @default("no-avatar.webp")
 
@@ -28,11 +28,11 @@ model List {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     String  @map("user_id")
-  name       String
-  isPublic   Boolean @default(false)
-  isDeleting Boolean @default(true)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String  @map("user_id")
+  name      String
+  isPublic  Boolean @default(false)
+  isEditing Boolean @default(true)
 
   animes Anime[]
 }

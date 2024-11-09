@@ -4,6 +4,8 @@ import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { ListModule } from './list/list.module';
+import { StorageModule } from './storage/storage.module';
 import * as path from 'node:path';
 
 @Module({
@@ -15,6 +17,8 @@ import * as path from 'node:path';
     AuthModule,
     UserModule,
     DatabaseModule,
+    ListModule,
+    StorageModule,
   ],
 })
 export class AppModule {}
