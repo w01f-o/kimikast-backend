@@ -53,7 +53,6 @@ export class ListController {
     @Body() dto: UpdateAnimeDto,
     @Param('id') id: string,
   ) {
-    console.log(dto);
     return this.listService.removeAnime(id, dto, userId);
   }
 

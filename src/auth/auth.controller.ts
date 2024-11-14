@@ -58,7 +58,7 @@ export class AuthController {
   ) {
     const refreshTokenFromCookie =
       req.cookies[this.authService.REFRESH_TOKEN_NAME];
-    console.log(refreshTokenFromCookie);
+
     if (!refreshTokenFromCookie) {
       this.authService.removeRefreshTokenFromResponse(res);
 
