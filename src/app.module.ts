@@ -14,6 +14,7 @@ import * as path from 'node:path';
     ConfigModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: path.join(__dirname, '..', 'static'),
+      serveRoot: '/kimikast-api',
     }),
     AuthModule,
     UserModule,
