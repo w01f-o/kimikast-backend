@@ -11,6 +11,17 @@ export class CommentService {
       where: {
         anilibriaSlug: slug,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            avatar: true,
+          },
+        },
+      },
     });
   }
 

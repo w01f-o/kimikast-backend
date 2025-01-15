@@ -12,8 +12,8 @@ import { UserService } from './user.service';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { CurrentUser } from '../auth/decorators/user.decorator';
 import { User } from '@prisma/client';
-import { AuthDto } from '../auth/dto/auth.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { UpdateUserDto } from './dto/update.dto';
 
 @Controller('user')
 export class UserController {
@@ -40,7 +40,7 @@ export class UserController {
   @UseInterceptors(FileInterceptor('avatar'))
   public async updateUser(
     @CurrentUser('id') id: string,
-    @Body() dto: AuthDto,
+    @Body() dto: UpdateUserDto,
     @UploadedFile() avatar?: Express.Multer.File,
   ) {
     return this.userService.update(id, dto, avatar);

@@ -4,6 +4,7 @@ import { AuthDto } from '../auth/dto/auth.dto';
 import { hash } from 'argon2';
 import { StorageService } from '../storage/storage.service';
 import { StaticLocation } from '../enums/StaticLocation.enum';
+import { UpdateUserDto } from './dto/update.dto';
 
 @Injectable()
 export class UserService {
@@ -53,7 +54,11 @@ export class UserService {
     });
   }
 
-  public async update(id: string, dto: AuthDto, avatar?: Express.Multer.File) {
+  public async update(
+    id: string,
+    dto: UpdateUserDto,
+    avatar?: Express.Multer.File,
+  ) {
     if (dto.password) dto.password = await hash(dto.password);
 
     if (avatar) {
