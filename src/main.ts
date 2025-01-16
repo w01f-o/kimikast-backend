@@ -10,7 +10,7 @@ async function bootstrap() {
   app.setGlobalPrefix('/kimikast-api');
   app.use(cookieParser());
   app.enableCors({
-    origin: '*',
+    origin: ['http://localhost:5555', 'https://w01f-server.ru:8080'],
     credentials: true,
     exposedHeaders: ['set-cookie'],
   });

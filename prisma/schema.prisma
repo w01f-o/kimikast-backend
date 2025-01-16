@@ -20,6 +20,10 @@ model User {
 
   lists    List[]
   comments Comment[]
+
+  progress AnimeProgress[]
+
+  @@map("users")
 }
 
 model List {
@@ -35,6 +39,8 @@ model List {
   isEditing Boolean @default(true)
 
   animes Anime[]
+
+  @@map("lists")
 }
 
 model Anime {
@@ -47,6 +53,26 @@ model Anime {
 
   listId String @map("list_id")
   lists  List   @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  @@map("animes")
+}
+
+model AnimeProgress {
+  id String @id @default(cuid())
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @map("user_id")
+
+  anilibriaSlug String @map("anilibria_slug")
+
+  currentEpisode Int     @default(1) @map("current_episode")
+  currentTime    Float   @default(0) @map("current_time")
+  isCompleted    Boolean @default(false) @map("is_completed")
+
+  @@unique([userId, anilibriaSlug])
 }
 
 model Comment {
@@ -61,4 +87,6 @@ model Comment {
 
   user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String? @map("user_id")
+
+  @@map("comments")
 }

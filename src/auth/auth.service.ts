@@ -100,7 +100,7 @@ export class AuthService {
 
     res.cookie(this.REFRESH_TOKEN_NAME, refreshToken, {
       httpOnly: true,
-      domain: 'w01f-server.ru',
+      domain: 'localhost',
       secure: true,
       expires: expiresIn,
       sameSite: 'lax',
@@ -110,7 +110,7 @@ export class AuthService {
   public removeRefreshTokenFromResponse(res: Response) {
     res.cookie(this.REFRESH_TOKEN_NAME, '', {
       httpOnly: true,
-      domain: 'w01f-server.ru',
+      domain: 'localhost',
       secure: true,
       expires: new Date(0),
       sameSite: 'lax',
