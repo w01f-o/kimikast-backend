@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { AuthDto } from '../auth/dto/auth.dto';
 import { hash } from 'argon2';
@@ -24,7 +24,15 @@ export class UserService {
   }
 
   public async findByUsername(name: string) {
-    return this.databaseService.user.findUnique({ where: { name } });
+    const user = await this.databaseService.user.findUnique({
+      where: { name },
+    });
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    return user;
   }
 
   public async create(dto: AuthDto) {
